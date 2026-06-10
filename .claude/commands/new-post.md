@@ -1,0 +1,66 @@
+# new-post
+
+新しいブログ記事を作成する。
+
+## カテゴリ
+
+以下の4つのみ使用する：
+
+- `.NET/C#` — .NETやC#の技術記事
+- `BIツール` — Power BI、Tableau、その他BIツールの記事
+- `Flutter` — FlutterやDartの技術記事
+- `AI` — LLM、機械学習、プロンプトエンジニアリング等の記事
+
+## ファイル命名規則
+
+カテゴリ別サブディレクトリに配置する：
+
+| カテゴリ | ディレクトリ |
+|---------|------------|
+| `.NET/C#` | `src/content/blog/dotnet/` |
+| `BIツール` | `src/content/blog/bi/` |
+| `Flutter` | `src/content/blog/flutter/` |
+| `AI` | `src/content/blog/ai/` |
+
+ファイル名は英数字とハイフンのみ使用する。
+例: `src/content/blog/dotnet/ef-core-intro.md`, `src/content/blog/flutter/navigation.md`
+
+URL は `/{カテゴリ}/{slug}/` になる（例: `/dotnet/ef-core-intro/`）。
+
+## フロントマター必須項目
+
+```markdown
+---
+title: '記事タイトル（日本語可）'
+description: '120〜160文字程度の記事概要。検索結果やOGPに表示される。'
+pubDate: 'YYYY-MM-DD'
+heroImage: '../../../assets/blog-placeholder-X.jpg'  # 1〜5 からローテーション
+category: 'カテゴリ名'
+---
+```
+
+`heroImage` は既存記事と重複しないよう `blog-placeholder-1.jpg` ～ `blog-placeholder-5.jpg` を順番に使い回す。サブディレクトリに置くため `../../../` が必要。
+
+## 記事構成のルール
+
+1. **導入**: 記事で何を学べるか、対象読者を1〜2段落で明示する
+2. **本文**: `## ` の見出しで章を区切る。コードを含む場合は言語指定付きコードブロックを使う
+3. **まとめ**: 記事の要点と次のステップ（関連記事への誘導など）で締める
+
+## 文体・トーン
+
+- 日本語で書く
+- 丁寧語（〜です・〜ます）を使う
+- 技術用語は初出時に簡単な説明を添える
+- コードブロックには適宜コメントを入れる
+
+## 実行手順
+
+ユーザーから以下を確認してから記事を作成する：
+
+1. カテゴリ（上記4つから選択）
+2. 記事のテーマ・タイトル案
+3. 対象読者レベル（入門 / 中級 / 上級）
+4. 含めたい主要トピック（任意）
+
+確認後、フロントマターと本文を含む完成形のMarkdownファイルを `src/content/blog/{カテゴリディレクトリ}/` に作成する。
