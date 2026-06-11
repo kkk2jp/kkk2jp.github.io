@@ -6,35 +6,38 @@ import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { CATEGORY_ICONS, getCategoryLabel, SITE_TITLE } from '../../consts';
 
-const PAGE_SIZE = 10;
-
 export async function getStaticPaths() {
+	const PAGE_SIZE = 10;
 	const posts = await getCollection('blog');
 	const categories = [...new Set(posts.map((p) => p.data.category))];
-	return categories.map((category) => ({
-		params: { category },
-		props: {
-			posts: posts
-				.filter((p) => p.data.category === category)
-				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
-		},
-	}));
+
+	return categories.flatMap((category) => {
+		const catPosts = posts
+			.filter((p) => p.data.category === category)
+			.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+		const totalPages = Math.ceil(catPosts.length / PAGE_SIZE);
+		return Array.from({ length: totalPages - 1 }, (_, i) => ({
+			params: { category, pagenum: String(i + 2) },
+			props: { posts: catPosts, totalPages },
+		}));
+	});
 }
 
-const { category } = Astro.params;
-const { posts } = Astro.props;
+const { category, pagenum } = Astro.params;
+const { posts, totalPages } = Astro.props;
+const currentPage = Number(pagenum);
 const label = getCategoryLabel(category);
 const icon = CATEGORY_ICONS[category] ?? 'article';
-
-const totalPages = Math.ceil(posts.length / PAGE_SIZE);
-const currentPage = 1;
-const pagePosts = posts.slice(0, PAGE_SIZE);
+const pagePosts = posts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 ---
 
 <!doctype html>
 <html lang="ja">
 	<head>
-		<BaseHead title={`${label} | ${SITE_TITLE}`} description={`${label}の記事一覧`} />
+		<BaseHead
+			title={`${label} (${currentPage}ページ目) | ${SITE_TITLE}`}
+			description={`${label}の記事一覧 ${currentPage}ページ目`}
+		/>
 		<style>
 			main { width: 960px; }
 
@@ -127,20 +130,21 @@ const pagePosts = posts.slice(0, PAGE_SIZE);
 				})}
 			</ul>
 
-			{totalPages > 1 && (
-				<nav class="pagination" aria-label="ページネーション">
-					<span class="disabled">← 前へ</span>
-					{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
-						p === currentPage
-							? <span class="current">{p}</span>
-							: <a href={`/${category}/${p}/`}>{p}</a>
-					)}
-					{currentPage < totalPages
-						? <a href={`/${category}/2/`}>次へ →</a>
-						: <span class="disabled">次へ →</span>
-					}
-				</nav>
-			)}
+			<nav class="pagination" aria-label="ページネーション">
+				{currentPage > 1
+					? <a href={currentPage === 2 ? `/${category}/` : `/${category}/${currentPage - 1}/`}>← 前へ</a>
+					: <span class="disabled">← 前へ</span>
+				}
+				{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
+					p === currentPage
+						? <span class="current">{p}</span>
+						: <a href={p === 1 ? `/${category}/` : `/${category}/${p}/`}>{p}</a>
+				)}
+				{currentPage < totalPages
+					? <a href={`/${category}/${currentPage + 1}/`}>次へ →</a>
+					: <span class="disabled">次へ →</span>
+				}
+			</nav>
 		</main>
 		<Footer />
 	</body>

@@ -8,7 +8,6 @@
 
 - `.NET/C#` — .NETやC#の技術記事
 - `BIツール` — Power BI、Tableau、その他BIツールの記事
-- `Flutter` — FlutterやDartの技術記事
 - `AI` — LLM、機械学習、プロンプトエンジニアリング等の記事
 
 ## ファイル命名規則
@@ -19,7 +18,6 @@
 |---------|------------|
 | `.NET/C#` | `src/content/blog/dotnet/` |
 | `BIツール` | `src/content/blog/bi/` |
-| `Flutter` | `src/content/blog/flutter/` |
 | `AI` | `src/content/blog/ai/` |
 
 ファイル名は英数字とハイフンのみ使用する。

@@ -32,7 +32,8 @@ const { title, description, image = FallbackImage } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
-<Font cssVariable="--font-atkinson" preload />
+<!-- Noto Sans JP はglobal.cssのGoogle Fonts @importで読み込む -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

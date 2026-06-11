@@ -12,59 +12,73 @@ type Props = CollectionEntry<'blog'>['data'];
 const { title, description, pubDate, updatedDate, heroImage, category } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="ja">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
 			.hero-image {
 				width: 100%;
+				max-width: 960px;
+				margin: 0 auto 40px;
+				padding: 0 16px;
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				width: 100%;
+				border-radius: 16px;
 			}
 			.prose {
 				width: 720px;
 				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				margin: 0 auto;
+				padding: 0 1em 80px;
+				color: var(--md-on-surface);
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+			.article-header {
+				margin-bottom: 40px;
+				padding-bottom: 24px;
+				border-bottom: 1px solid var(--md-outline-variant);
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
+			.article-meta {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin-bottom: 16px;
+				flex-wrap: wrap;
 			}
 			.category-badge {
-				display: inline-block;
-				padding: 0.2rem 0.75rem;
+				display: inline-flex;
+				align-items: center;
+				padding: 4px 14px;
 				border-radius: 9999px;
-				background-color: rgb(var(--accent));
-				color: white;
+				background: var(--md-primary-container);
+				color: var(--md-on-primary-container);
 				font-size: 0.8rem;
+				font-weight: 500;
 				text-decoration: none;
-				margin-bottom: 0.75rem;
+				transition: opacity 0.15s;
 			}
 			.category-badge:hover {
-				opacity: 0.85;
+				opacity: 0.8;
+				text-decoration: none;
+			}
+			.date {
+				font-size: 0.875rem;
+				color: var(--md-on-surface-variant);
+			}
+			.last-updated {
+				font-size: 0.8rem;
+				color: var(--md-on-surface-variant);
+				font-style: italic;
+			}
+			.article-header h1 {
+				font-size: 2rem;
+				font-weight: 700;
+				line-height: 1.3;
+				margin: 0;
+			}
+			@media (max-width: 720px) {
+				.article-header h1 { font-size: 1.625rem; }
 			}
 		</style>
 	</head>
@@ -73,26 +87,27 @@ const { title, description, pubDate, updatedDate, heroImage, category } = Astro.
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
+				{heroImage && (
+					<div class="hero-image">
+						<Image width={1020} height={510} src={heroImage} alt="" />
+					</div>
+				)}
 				<div class="prose">
-					<div class="title">
-						{category && (
-							<a class="category-badge" href={`/${category}/`}>{getCategoryLabel(category)}</a>
-						)}
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+					<div class="article-header">
+						<div class="article-meta">
+							{category && (
+								<a class="category-badge" href={`/${category}/`}>
+									{getCategoryLabel(category)}
+								</a>
+							)}
+							<span class="date"><FormattedDate date={pubDate} /></span>
+							{updatedDate && (
+								<span class="last-updated">
+									更新: <FormattedDate date={updatedDate} />
+								</span>
+							)}
 						</div>
 						<h1>{title}</h1>
-						<hr />
 					</div>
 					<slot />
 				</div>

@@ -1,23 +1,19 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { getCategoryLabel, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { CATEGORY_ICONS, CATEGORY_ORDER, getCategoryLabel, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const allPosts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
-const latestPost = allPosts[0];
-const categories = [...new Set(allPosts.map((p) => p.data.category))].sort();
-
 const postsByCategory = Object.fromEntries(
-	categories.map((cat) => [
+	CATEGORY_ORDER.map((cat) => [
 		cat,
-		allPosts.filter((p) => p.data.category === cat),
+		allPosts.filter((p) => p.data.category === cat).slice(0, 5),
 	]),
 );
 ---
@@ -27,182 +23,69 @@ const postsByCategory = Object.fromEntries(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				width: 960px;
-			}
+			main { width: 960px; }
 
-			/* Hero */
-			.hero {
-				margin-bottom: 3rem;
-			}
-			.hero a {
-				display: block;
-				text-decoration: none;
-				color: inherit;
-			}
-			.hero img {
-				width: 100%;
-				border-radius: 16px;
-				margin-bottom: 1rem;
-				box-shadow: var(--box-shadow);
-			}
-			.hero .tag {
-				display: inline-block;
-				padding: 0.2rem 0.7rem;
-				border-radius: 9999px;
-				background-color: rgb(var(--accent));
-				color: white;
-				font-size: 0.8rem;
-				margin-bottom: 0.5rem;
-			}
-			.hero h2 {
-				margin: 0.5rem 0;
-				font-size: 2rem;
-				line-height: 1.2;
-			}
-			.hero .meta {
-				color: rgb(var(--gray));
-				font-size: 0.9rem;
-				margin: 0;
-			}
-			.hero p.desc {
-				color: rgb(var(--gray-dark));
-				margin: 0.75rem 0 0;
-				line-height: 1.6;
-			}
-			.hero a:hover h2 {
-				color: rgb(var(--accent));
-			}
+			.category-section { margin-bottom: 48px; }
 
-			/* Category sections */
-			.category-section {
-				margin-bottom: 3.5rem;
-			}
 			.category-section-header {
 				display: flex;
-				align-items: baseline;
+				align-items: center;
 				justify-content: space-between;
-				margin-bottom: 1.25rem;
-				padding-bottom: 0.5rem;
-				border-bottom: 2px solid rgb(var(--accent));
+				margin-bottom: 16px;
+				padding-bottom: 12px;
+				border-bottom: 2px solid var(--md-primary);
 			}
 			.category-section-header h2 {
 				margin: 0;
-				font-size: 1.4rem;
+				font-size: 1.25rem;
+				font-weight: 700;
 			}
 			.category-section-header a.more {
 				font-size: 0.875rem;
-				color: rgb(var(--accent));
+				color: var(--md-primary);
 				text-decoration: none;
+				font-weight: 500;
 			}
-			.category-section-header a.more:hover {
-				text-decoration: underline;
-			}
-			.post-grid {
-				display: flex;
-				gap: 1.5rem;
-				list-style: none;
-				margin: 0;
-				padding: 0;
-			}
-			.post-grid li {
-				flex: 1;
-				min-width: 0;
-			}
-			.post-grid a {
-				display: block;
-				text-decoration: none;
-				color: inherit;
-				transition: 0.2s ease;
-			}
-			.post-grid img {
-				width: 100%;
-				border-radius: 10px;
-				margin-bottom: 0.5rem;
-			}
-			.post-grid h3 {
-				margin: 0;
-				font-size: 1rem;
-				line-height: 1.4;
-				color: rgb(var(--black));
-			}
-			.post-grid .date {
-				margin: 0.25rem 0 0;
-				font-size: 0.8rem;
-				color: rgb(var(--gray));
-			}
-			.post-grid a:hover h3 {
-				color: rgb(var(--accent));
-			}
-			.post-grid a:hover img {
-				box-shadow: var(--box-shadow);
-			}
+			.category-section-header a.more:hover { text-decoration: underline; }
 
 			@media (max-width: 720px) {
-				.post-grid {
-					flex-direction: column;
-				}
+				.post-list .post-thumb { width: 56px; height: 42px; }
+				.post-list .post-thumb .material-symbols-outlined { font-size: 22px; }
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			{
-				latestPost && (
-					<section class="hero">
-						<a href={`/${latestPost.id}/`}>
-							{latestPost.data.heroImage && (
-								<Image
-									width={960}
-									height={480}
-									src={latestPost.data.heroImage}
-									alt=""
-								/>
-							)}
-							<span class="tag">{getCategoryLabel(latestPost.data.category)}</span>
-							<h2>{latestPost.data.title}</h2>
-							<p class="meta">
-								<FormattedDate date={latestPost.data.pubDate} />
-							</p>
-							<p class="desc">{latestPost.data.description}</p>
-						</a>
-					</section>
-				)
-			}
-
-			{
-				categories.map((cat) => (
-					<section class="category-section">
-						<div class="category-section-header">
-							<h2>{getCategoryLabel(cat)}</h2>
-							<a class="more" href={`/${cat}/`}>
-								すべて見る →
-							</a>
-						</div>
-						<ul class="post-grid">
-							{postsByCategory[cat].map((post) => (
+			{CATEGORY_ORDER.map((cat) => (
+				<section class="category-section">
+					<div class="category-section-header">
+						<h2>{getCategoryLabel(cat)}</h2>
+						<a class="more" href={`/${cat}/`}>すべて見る →</a>
+					</div>
+					<ul class="post-list">
+						{postsByCategory[cat].map((post) => {
+							const parts = post.id.split('/');
+							const slug = parts.slice(1).join('/');
+							return (
 								<li>
-									<a href={`/${post.id}/`}>
-										{post.data.heroImage && (
-											<Image
-												width={440}
-												height={220}
-												src={post.data.heroImage}
-												alt=""
-											/>
-										)}
-										<h3>{post.data.title}</h3>
-										<p class="date">
-											<FormattedDate date={post.data.pubDate} />
-										</p>
+									<a href={`/${cat}/${slug}/`}>
+										<div class="post-thumb">
+											<span class="material-symbols-outlined" aria-hidden="true">
+												{CATEGORY_ICONS[cat] ?? 'article'}
+											</span>
+										</div>
+										<div class="post-info">
+											<h3>{post.data.title}</h3>
+											<p class="date"><FormattedDate date={post.data.pubDate} /></p>
+										</div>
 									</a>
 								</li>
-							))}
-						</ul>
-					</section>
-				))
-			}
+							);
+						})}
+					</ul>
+				</section>
+			))}
 		</main>
 		<Footer />
 	</body>
