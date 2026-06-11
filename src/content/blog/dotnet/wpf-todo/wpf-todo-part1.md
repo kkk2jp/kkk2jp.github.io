@@ -52,11 +52,6 @@ Visual Studioを起動し、「新しいプロジェクトの作成」から **W
 
 作成後、NuGetパッケージマネージャーで **CommunityToolkit.Mvvm** をインストールします。
 
-```
-パッケージマネージャーコンソール：
-Install-Package CommunityToolkit.Mvvm
-```
-
 ---
 
 ## プロジェクト構成を整える
@@ -73,13 +68,39 @@ WpfTodo/
     └── MainWindow.xaml  ← デフォルトのものを移動
 ```
 
-`MainWindow.xaml` をVisual Studio上で `Views` フォルダに移動し、`App.xaml` の `StartupUri` を更新します。
+`MainWindow.xaml` をVisual Studio上で `Views` フォルダに移動し、以下の2か所を更新します。
+
+**① App.xaml の StartupUri**
 
 ```xml
 <!-- App.xaml -->
 <Application
     x:Class="WpfTodo.App"
     StartupUri="Views/MainWindow.xaml">
+```
+
+**② MainWindow.xaml.cs の名前空間**
+
+ファイルを `Views` フォルダに移動すると、コードビハインドの名前空間がプロジェクトルートのままになっています。`WpfTodo.Views` に変更してください。
+
+```csharp
+// 移動前
+namespace WpfTodo;
+
+// 移動後
+namespace WpfTodo.Views;
+```
+
+**③ MainWindow.xaml の x:Class 属性**
+
+XAMLファイル側の `x:Class` も同様に更新が必要です。
+
+```xml
+<!-- 移動前 -->
+x:Class="WpfTodo.MainWindow"
+
+<!-- 移動後 -->
+x:Class="WpfTodo.Views.MainWindow"
 ```
 
 ---
